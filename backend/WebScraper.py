@@ -1,11 +1,20 @@
-# pip install googlesearch-python requests beautifulsoup4 tiktoken
-from googlesearch import search
+# requirements:
+# pip install googlesearch-python requests beautifulsoup4 tiktoken openai selenium pillow pytesseract
+
 import requests
 from bs4 import BeautifulSoup
+from googlesearch import search
 import tiktoken
+from selenium_bot import SeleniumBot   # from earlier code
+import pytesseract
+from PIL import Image
+from io import BytesIO
+import time
+import openai
 
-# ------------------- Token-based Chunking -------------------
-encoding = tiktoken.encoding_for_model("gpt-4")  # or "gpt-3.5-turbo"
+
+# ------------------- Tokenizer -------------------
+encoding = tiktoken.encoding_for_model("gpt-4")
 
 def chunk_text(text, max_tokens=300):
     tokens = encoding.encode(text)
@@ -16,22 +25,24 @@ def chunk_text(text, max_tokens=300):
         chunks.append(chunk_text)
     return chunks
 
-# ------------------- Scraper -------------------
+
+# ------------------- Basic Scraper (Requests + BS4) -------------------
 def scrape_site(url, max_paragraphs=10, max_tokens=300):
     """
-    Scrape a site: headline + paragraphs, then token-chunk paragraphs.
-    Returns a list of chunks with metadata.
+    Scrape HTML text and chunk into token-limited pieces.
+    Falls back to Selenium if needed.
     """
     try:
         headers = {"User-Agent": "Mozilla/5.0"}
-        r = requests.get(url, headers=headers, timeout=5)
+        r = requests.get(url, headers=headers, timeout=7)
+        if "text/html" not in r.headers.get("Content-Type", ""):
+            return []
+
         soup = BeautifulSoup(r.text, "html.parser")
 
-        # Extract headline
         headline_tag = soup.find(["h1", "h2"])
         headline = headline_tag.get_text(strip=True) if headline_tag else ""
 
-        # Extract paragraphs
         paragraphs = soup.find_all("p")[:max_paragraphs]
 
         all_chunks = []
@@ -39,7 +50,6 @@ def scrape_site(url, max_paragraphs=10, max_tokens=300):
             text = p.get_text(strip=True)
             if not text:
                 continue
-            # Token-based chunking
             chunks = chunk_text(text, max_tokens=max_tokens)
             for chunk_idx, chunk in enumerate(chunks):
                 all_chunks.append({
@@ -49,26 +59,99 @@ def scrape_site(url, max_paragraphs=10, max_tokens=300):
                     "chunk_index": chunk_idx,
                     "text": chunk
                 })
+
         return all_chunks
 
     except Exception as e:
-        print(f"Error scraping {url}: {e}")
-        return []
+        print(f"Requests scraping failed for {url}, trying Selenium... {e}")
+        return scrape_with_selenium(url)
 
-# ------------------- Google Top URLs -------------------
+
+# ------------------- Selenium Fallback -------------------
+def scrape_with_selenium(url, max_tokens=300):
+    bot = SeleniumBot(headless=True)
+    try:
+        bot.open_site(url)
+        time.sleep(3)
+        paragraphs = bot.extract_text("p", limit=15)
+        all_chunks = []
+        for idx, text in enumerate(paragraphs):
+            chunks = chunk_text(text, max_tokens=max_tokens)
+            for chunk_idx, chunk in enumerate(chunks):
+                all_chunks.append({
+                    "url": url,
+                    "headline": "",
+                    "paragraph_index": idx,
+                    "chunk_index": chunk_idx,
+                    "text": chunk
+                })
+        return all_chunks
+    except Exception as e:
+        print(f"Selenium scraping failed for {url}: {e}")
+        return []
+    finally:
+        bot.close()
+
+
+# ------------------- OCR Helper -------------------
+def extract_text_from_image(url):
+    try:
+        r = requests.get(url, stream=True, timeout=7)
+        img = Image.open(BytesIO(r.content))
+        text = pytesseract.image_to_string(img)
+        return text.strip()
+    except Exception as e:
+        print(f"OCR failed for {url}: {e}")
+        return ""
+
+
+# ------------------- Google URLs -------------------
 def get_top_google_urls(query, num_results=10):
     return [url for url in search(query, num_results=num_results)]
 
-# ------------------- Scrape Top Sites in Batches -------------------
-def scrape_google_top_sites(query, batch_size=3, max_tokens=300):
-    urls = get_top_google_urls(query)
-    batches = [urls[i:i+batch_size] for i in range(0, len(urls), batch_size)]
 
-    all_site_chunks = []
-    for batch in batches:
-        print(f"Scraping batch: {batch}")
-        for url in batch:
-            chunks = scrape_site(url, max_tokens=max_tokens)
-            all_site_chunks.extend(chunks)
-    return all_site_chunks
+# ------------------- Stage-Based Scraper -------------------
+def staged_scrape(query, llm_client, max_tokens=300):
+    # Collect pro + con URLs
+    pro_urls = get_top_google_urls(f"{query} pros", num_results=10)
+    con_urls = get_top_google_urls(f"{query} cons", num_results=10)
+    urls = pro_urls + con_urls
 
+    all_chunks = []
+
+    # Stage 1: first 5+5
+    stage1_urls = urls[:10]
+    for url in stage1_urls:
+        chunks = scrape_site(url, max_tokens=max_tokens)
+        all_chunks.extend(chunks)
+
+    # Ask LLM if this is enough
+    decision = ask_llm_if_enough(query, all_chunks, llm_client)
+    if decision == "enough":
+        return all_chunks
+
+    # Stage 2: remaining URLs
+    stage2_urls = urls[10:]
+    for url in stage2_urls:
+        chunks = scrape_site(url, max_tokens=max_tokens)
+        all_chunks.extend(chunks)
+
+    return all_chunks
+
+
+# ------------------- LLM Decision -------------------
+def ask_llm_if_enough(query, chunks, llm_client):
+    context = "\n".join([c["text"] for c in chunks[:20]])  # summarize first 20 chunks only
+    prompt = f"""
+    User query: {query}
+    Current scraped context:
+    {context}
+
+    Based on this, do you have enough information to answer the question? 
+    Reply with only one word: "enough" or "more".
+    """
+    resp = llm_client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return resp.choices[0].message.content.strip().lower()
