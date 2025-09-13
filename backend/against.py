@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from groq import Groq
 import os
 
-# Initialize Groq client
-client = Groq(api_key="key")
+# Initialize Groq against
+against = Groq(api_key="key")
 
 app = FastAPI()
 
@@ -28,7 +28,7 @@ def oppose_claim(request: ClaimRequest):
     Write opposing arguments and evidence for this claim, as if you are opposing it in a debate.
     """
 
-    completion = client.chat.completions.create(
+    completion = against.chat.completions.create(
         model="llama-3.1-8b-instant",
         messages=[
             {"role": "system", "content": "You are a debate assistant."},
