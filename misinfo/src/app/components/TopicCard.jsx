@@ -10,7 +10,7 @@ function TopicCard({
   trend,
 }) {
   return (
-    <div className="bg-white rounded-xl shadow hover:shadow-lg transition p-5 space-y-3">
+    <div className="bg-[#010E30] rounded-xl shadow-md hover:shadow-blue-400 transition p-5 space-y-3">
       {/* Category */}
       <div className="flex justify-between items-center"> 
         <span
@@ -18,20 +18,20 @@ function TopicCard({
         >
           {category}
         </span>
-        <div className="flex items-center text-gray-500 space-x-1">
+        <div className="flex items-center text-gray-400 space-x-1">
           <span>{trend}%</span>
           <span className="text-blue-500">▲</span>
         </div>
       </div>
 
       {/* Title */}
-      <h3 className="text-2xl mt-3 text-gray-700 font-semibold">{title}</h3>
+      <h3 className="text-2xl mt-4 text-gray-300 font-semibold">{title}</h3>
 
       {/* Description */}
       <p className="text-gray-500 text-lg">{description}</p>
 
       {/* Info Row */}
-      <div className="flex space-x-3 items-center text-gray-500 text-md mt-3">
+      <div className="flex space-x-3 items-center text-gray-400 text-md mt-4">
         <div className="flex items-center space-x-2">
           <span>💬</span>
           <span>{debates} debates</span>
@@ -42,7 +42,7 @@ function TopicCard({
         </div>
       </div>
       {/* Button */}
-      <button className="w-full mt-3 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+      <button className="w-full mt-3 bg-blue-600 font-bold text-[#0F1D50] py-2 rounded-lg hover:bg-blue-700 transition">
         Start Debate
       </button>
     </div>

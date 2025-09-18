@@ -66,54 +66,45 @@ function TrendingTopics() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#010E30]">
       {/* Header */}
-      <header className="flex justify-between items-center px-6 py-4 shadow bg-white">
-        <div className="flex items-center gap-2 text-black">
-          <div className="w-6 h-6 bg-[#4285f4] rounded"></div>
-          <h1 className="font-bold text-2xl">AI Debate Arena</h1>
-        </div>
-
-        <nav className="flex gap-6">
-          <button
-            className="text-gray-600 hover:text-black text-xl"
-            onClick={() => {
-              window.location.href = "/";
-            }}
-          >
+      <header className="flex justify-between items-center px-6 py-4 shadow bg-[#010E30]">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">DebateBot Arena</h1>
+        <nav className="flex gap-10">
+          <button className="text-white text-xl hover:text-black  hover:bg-gray-200 rounded-lg px-4 py-1"
+          onClick={() => (window.location.href = "/")}>
             Home
           </button>
-          <button className="text-gray-600 hover:text-black text-xl">
+          <button
+            onClick={() => (window.location.href = "/trending_topics")}
+            className="text-white text-xl hover:text-black hover:bg-gray-200 rounded-lg px-4 py-1"
+          >
             Topics
           </button>
           <button
-            className="text-gray-600 hover:text-black text-xl"
-            onClick={() => {
-              window.location.href = "/history";
-            }}
+            onClick={() => (window.location.href = "/history")}
+            className="text-white text-xl hover:text-black  hover:bg-gray-200 rounded-lg px-4 py-1"
           >
             History
           </button>
           <button
-            className="bg-[#347ff7] text-white px-4 py-3 rounded-lg hover:bg-blue-700"
-            onClick={() => {
-              window.location.href = "/";
-            }}
+            onClick={() => (window.location.href = "/")}
+            className="bg-gray-200 text-black text-bold px-4 py-2 rounded-lg hover:bg-[#020817] hover:text-white"
           >
             New Debate
           </button>
         </nav>
       </header>
-      <div className="max-w-full mx-15 px-4 py-10">
-        <h2 className="text-5xl text-gray-800 font-bold mb-2">
+      <div className="max-w-full bg-[#020817] max-h-full px-4 py-10">
+        <h2 className="text-5xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
           Trending Topics
         </h2>
-        <p className="text-gray-600 mb-8 text-2xl">
+        <p className="text-gray-400 mb-8 text-2xl">
           Discover popular debate topics and join the conversation
         </p>
 
         {/* Cards Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 ">
           {topics.map((topic, index) => (
             <TopicCard key={index} {...topic} />
           ))}
