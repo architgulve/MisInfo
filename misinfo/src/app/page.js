@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import DebateArgumentCard from "./components/DebateArgumentCard";
 const clamp = (v) => Math.max(0, Math.min(100, Number(v) || 0));
+// import {poppins} from './components/fonts/Poppins-Regular.ttf';
 
 export default function Home() {
   const [submittedClaim, setSubmittedClaim] = useState("");
@@ -125,9 +126,9 @@ export default function Home() {
   const ver = clamp(verdict);
 
   return (
-    <div className="min-h-screen bg-[#020817] flex flex-col text-gray-800">
+    <div className="min-h-screen bg-[#181818] flex flex-col text-gray-800 font-poppins">
       {/* Header */}
-      <header className="flex justify-between items-center px-6 py-4 shadow bg-[#010E30]">
+      <header className="flex justify-between items-center px-6 py-4 shadow bg-[#212121]">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
           DebateBot Arena
         </h1>
@@ -149,7 +150,7 @@ export default function Home() {
           </button>
           <button
             onClick={() => (window.location.href = "/")}
-            className="bg-gray-200 text-black text-bold px-4 py-2 rounded-lg hover:bg-[#020817] hover:text-white"
+            className="bg-gray-200 text-black text-bold px-4 py-2 rounded-lg hover:bg-[#181818] hover:text-white"
           >
             New Debate
           </button>
@@ -167,7 +168,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.5 }}
-              className=" shadow-xl bg-[#010E30] rounded-lg p-6 max-w-7xl w-full text-center"
+              className=" shadow-xl bg-[#212121] rounded-lg p-6 max-w-7xl w-full text-center"
             >
               <h2 className="text-5xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
                 What's on trial today?
@@ -199,7 +200,7 @@ export default function Home() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5 }}
-              className="bg-[#010E30] rounded-lg shadow-md p-8 w-full max-w-7xl text-center"
+              className="bg-[#212121] rounded-lg shadow-md p-8 w-full max-w-7xl text-center"
             >
               <h2 className="text-xl font-bold text-gray-200">
                 Current Debate:
@@ -225,181 +226,13 @@ export default function Home() {
               </div>
               <button
                 onClick={handleReset}
-                className="mt-6 px-4 py-1 bg-[#010E30] text-gray-200 border-2  rounded-lg hover:bg-blue-400 hover:text-black transition"
+                className="mt-6 px-4 py-1 bg-[#212121] text-gray-200 border-2  rounded-lg hover:bg-blue-400 hover:text-black transition"
               >
                 Reset
               </button>
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Debate Agents */}
-        <div className="flex gap-6 mt-6 w-full max-w-7xl">
-          {/* ProBot */}
-          <div className="flex-1 bg-white rounded-lg shadow-md overflow-hidden flex flex-col">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-green-500 to-green-800 px-4 py-4">
-              <h3 className="text-white font-semibold text-lg">ProBot</h3>
-              <p className="text-green-100 text-sm">Supporting Arguments</p>
-            </div>
-
-            {/* Body */}
-            <div className="p-4 flex-1 overflow-y-auto bg-[#010E30]">
-              <AnimatePresence mode="wait">
-                {/* Waiting */}
-                {!submittedClaim && proStage === "waiting" && (
-                  <motion.p
-                    key="waiting-pro"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="text-gray-400 text-center"
-                  >
-                    Waiting for debate topic...
-                  </motion.p>
-                )}
-
-                {/* Generating */}
-                {proStage === "generating" && (
-                  <motion.div
-                    key="generating-pro"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="text-center text-gray-200"
-                  >
-                    <p>Generating supporting arguments for:</p>
-                    <p className="font-medium mt-1">"{submittedClaim}"</p>
-                    {/* Loading dots animation */}
-                    <motion.div
-                      className="flex justify-center gap-1 mt-3"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      {[0, 1, 2].map((i) => (
-                        <motion.span
-                          key={i}
-                          className="w-2 h-2 bg-green-600 rounded-full"
-                          animate={{ y: [0, -6, 0] }}
-                          transition={{
-                            duration: 0.6,
-                            repeat: Infinity,
-                            delay: i * 0.2,
-                          }}
-                        />
-                      ))}
-                    </motion.div>
-                  </motion.div>
-                )}
-
-                {/* Result */}
-                {proStage === "result" && (
-                  <motion.div
-                    key="result-pro"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="space-y-3"
-                  >
-                    {proArguments.map((arg, i) => (
-                      <DebateArgumentCard
-                        key={i}
-                        argument={arg.argument}
-                        source={arg.source}
-                        reliability={arg.reliability}
-                        index={i}
-                      />
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-
-          {/* ConBot */}
-          <div className="flex-1 bg-[#010E30] rounded-lg shadow-md overflow-hidden flex flex-col">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-red-500 to-red-700 px-4 py-4">
-              <h3 className="text-white font-semibold text-lg">ConBot</h3>
-              <p className="text-red-100 text-sm">Opposing Arguments</p>
-            </div>
-
-            {/* Body */}
-            <div className="p-4 flex-1 overflow-y-auto">
-              <AnimatePresence mode="wait">
-                {/* Waiting */}
-                {!submittedClaim && conStage === "waiting" && (
-                  <motion.p
-                    key="waiting-con"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="text-gray-400 text-center"
-                  >
-                    Waiting for debate topic...
-                  </motion.p>
-                )}
-
-                {/* Generating */}
-                {conStage === "generating" && (
-                  <motion.div
-                    key="generating-con"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    className="text-center text-gray-200"
-                  >
-                    <p>Generating opposing arguments for:</p>
-                    <p className="font-medium mt-1">"{submittedClaim}"</p>
-
-                    {/* Loading dots animation */}
-                    <motion.div
-                      className="flex justify-center gap-1 mt-3"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      {[0, 1, 2].map((i) => (
-                        <motion.span
-                          key={i}
-                          className="w-2 h-2 bg-red-600 rounded-full"
-                          animate={{ y: [0, -6, 0] }}
-                          transition={{
-                            duration: 0.6,
-                            repeat: Infinity,
-                            delay: i * 0.2,
-                          }}
-                        />
-                      ))}
-                    </motion.div>
-                  </motion.div>
-                )}
-
-                {/* Result */}
-                {conStage === "result" && (
-                  <motion.div
-                    key="result-con"
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className="space-y-3"
-                  >
-                    {conArguments.map((arg, i) => (
-                      <DebateArgumentCard
-                        key={i}
-                        argument={arg.argument}
-                        source={arg.source}
-                        reliability={arg.reliability}
-                        index={i}
-                      />
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          </div>
-        </div>
 
         {/* Jury Analysis */}
         <AnimatePresence mode="wait">
@@ -410,7 +243,7 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="text-gray-400 bg-[#010E30] text-center mt-6"
+              className="text-gray-400 bg-[#212121] text-center mt-6"
             ></motion.p>
           )}
 
@@ -450,7 +283,7 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.6 }}
-              className="bg-[#010E30] rounded-lg shadow-md p-6 w-full max-w-6xl mt-8"
+              className="bg-[#212121] rounded-lg shadow-md p-6 w-full max-w-6xl mt-8"
             >
               <h2 className="text-2xl font-bold mb-4 text-blue-200">
                 Jury Analysis
@@ -477,7 +310,7 @@ export default function Home() {
                   <p className="text-gray-200 mb-2 text-center">
                     Source Reliability
                   </p>
-                  <div className="w-full bg-[#010E30] border-1 border-gray-200 rounded-full h-3">
+                  <div className="w-full bg-[#212121] border-1 border-gray-200 rounded-full h-3">
                     <motion.div
                       className="bg-blue-600 h-3 rounded-full"
                       initial={{ width: 0 }}
@@ -495,7 +328,7 @@ export default function Home() {
                   <p className="text-gray-200 mb-2 text-center">
                     Fact Accuracy
                   </p>
-                  <div className="w-full bg-[#010E30] border-1 border-gray-200 rounded-full h-3">
+                  <div className="w-full bg-[#212121] border-1 border-gray-200 rounded-full h-3">
                     <motion.div
                       className="bg-purple-600 h-3 rounded-full"
                       initial={{ width: 0 }}
@@ -514,7 +347,7 @@ export default function Home() {
                 <h3 className="text-xl font-semibold mb-2 text-gray-200">
                   Audience Verdict
                 </h3>
-                <div className="w-full bg-[#010E30] border-1 border-gray-200 rounded-full h-3 overflow-hidden">
+                <div className="w-full bg-[#212121] border-1 border-gray-200 rounded-full h-3 overflow-hidden">
                   <motion.div
                     className="bg-yellow-400 h-3 rounded-full"
                     initial={{ width: 0 }}
@@ -528,22 +361,199 @@ export default function Home() {
           )}
         </AnimatePresence>
 
+        {/* Debate Agents */}
+        <div className="flex gap-6 mt-6 w-full max-w-7xl">
+          {/* ProBot */}
+          <div className="flex-1 bg-[#1f1f1f] rounded-lg shadow-lg overflow-hidden flex flex-col">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-green-500 to-green-800 px-6 py-5 flex flex-col items-center">
+              <h3 className="text-white font-bold text-2xl text-center">
+                ProBot
+              </h3>
+              <p className="text-red-200 text-md mt-1 text-center">
+                Supporting Arguments
+              </p>
+            </div>
+
+            {/* Body */}
+            <div className="p-5 flex-1 overflow-y-auto">
+              <AnimatePresence mode="wait">
+                {/* Waiting */}
+                {!submittedClaim && conStage === "waiting" && (
+                  <motion.p
+                    key="waiting-con"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="text-gray-400 text-center bg-[#2a2a2a] p-4 rounded-md shadow-sm"
+                  >
+                    Waiting for debate topic...
+                  </motion.p>
+                )}
+
+                {/* Generating */}
+                {conStage === "generating" && (
+                  <motion.div
+                    key="generating-con"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="text-center text-gray-200 bg-[#2a2a2a] p-4 rounded-md shadow-sm"
+                  >
+                    <p>Generating opposing arguments for:</p>
+                    <p className="font-medium mt-1">"{submittedClaim}"</p>
+
+                    {/* Loading dots animation */}
+                    <motion.div
+                      className="flex justify-center gap-2 mt-3"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      {[0, 1, 2].map((i) => (
+                        <motion.span
+                          key={i}
+                          className="w-3 h-3 bg-red-500 rounded-full"
+                          animate={{ y: [0, -6, 0] }}
+                          transition={{
+                            duration: 0.6,
+                            repeat: Infinity,
+                            delay: i * 0.2,
+                          }}
+                        />
+                      ))}
+                    </motion.div>
+                  </motion.div>
+                )}
+
+                {/* Result */}
+                {conStage === "result" && (
+                  <motion.div
+                    key="result-con"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="space-y-3"
+                  >
+                    {conArguments.map((arg, i) => (
+                      <DebateArgumentCard
+                        key={i}
+                        argument={arg.argument}
+                        source={arg.source}
+                        reliability={arg.reliability}
+                        index={i}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* ConBot */}
+          <div className="flex-1 bg-[#1f1f1f] rounded-lg shadow-lg overflow-hidden flex flex-col">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-red-500 to-red-800 px-6 py-5 flex flex-col items-center">
+              <h3 className="text-white font-bold text-2xl text-center">
+                ConBot
+              </h3>
+              <p className="text-red-200 text-md mt-1 text-center">
+                Opposing Arguments
+              </p>
+            </div>
+
+            {/* Body */}
+            <div className="p-5 flex-1 overflow-y-auto">
+              <AnimatePresence mode="wait">
+                {/* Waiting */}
+                {!submittedClaim && conStage === "waiting" && (
+                  <motion.p
+                    key="waiting-con"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="text-gray-400 text-center bg-[#2a2a2a] p-4 rounded-md shadow-sm"
+                  >
+                    Waiting for debate topic...
+                  </motion.p>
+                )}
+
+                {/* Generating */}
+                {conStage === "generating" && (
+                  <motion.div
+                    key="generating-con"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    className="text-center text-gray-200 bg-[#2a2a2a] p-4 rounded-md shadow-sm"
+                  >
+                    <p>Generating opposing arguments for:</p>
+                    <p className="font-medium mt-1">"{submittedClaim}"</p>
+
+                    {/* Loading dots animation */}
+                    <motion.div
+                      className="flex justify-center gap-2 mt-3"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      {[0, 1, 2].map((i) => (
+                        <motion.span
+                          key={i}
+                          className="w-3 h-3 bg-red-500 rounded-full"
+                          animate={{ y: [0, -6, 0] }}
+                          transition={{
+                            duration: 0.6,
+                            repeat: Infinity,
+                            delay: i * 0.2,
+                          }}
+                        />
+                      ))}
+                    </motion.div>
+                  </motion.div>
+                )}
+
+                {/* Result */}
+                {conStage === "result" && (
+                  <motion.div
+                    key="result-con"
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.4 }}
+                    className="space-y-3"
+                  >
+                    {conArguments.map((arg, i) => (
+                      <DebateArgumentCard
+                        key={i}
+                        argument={arg.argument}
+                        source={arg.source}
+                        reliability={arg.reliability}
+                        index={i}
+                      />
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+          </div>
+        </div>
+
         {/* Input Section */}
-        <div className="mt-10 bg-[#010E30] border-1 border-gray-200 p-6 shadow-md rounded-lg max-w-6xl w-full text-center mb-10">
-          <h2 className="text-xl text-gray-200 font-semibold">
+        <div className="mt-10 bg-[#212121] border-1 border-gray-200 p-6 shadow-md rounded-lg max-w-6xl w-full text-center mb-10">
+          <h2 className="text-2xl text-gray-200 font-semibold">
             Choose Next Debate Topic
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-            <button className="px-4 py-2 bg-blue-400 text-[#010E30] rounded-lg hover:bg-blue-700">
+            <button className="px-4 py-2 bg-[#181818] text-blue-700 font-bold text-xl  rounded-lg hover:bg-blue-700 hover:text-white">
               Cryptocurrency is the future of finance
             </button>
-            <button className="px-4 py-2 bg-green-400 text-grren-900 rounded-lg hover:bg-green-700">
+            <button className="px-4 py-2 bg-[#181818] text-green-700 font-bold text-xl rounded-lg hover:bg-green-700 hover:text-white ">
               Social media has a net negative impact
             </button>
-            <button className="px-4 py-2 bg-red-400 text-red-800 rounded-lg hover:bg-red-700">
+            <button className="px-4 py-2 bg-[#181818] text-red-700 font-bold text-xl rounded-lg hover:bg-red-700 hover:text-white">
               Remote work should be the standard
             </button>
-            <button className="px-4 py-2 bg-yellow-400 text-yellow-900 rounded-lg hover:bg-yellow-700">
+            <button className="px-4 py-2 bg-[#181818] text-yellow-400 font-bold text-xl rounded-lg hover:bg-yellow-400 hover:text-white">
               Gene editing should be strictly regulated
             </button>
           </div>

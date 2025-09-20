@@ -10,9 +10,9 @@ function TopicCard({
   trend,
 }) {
   return (
-    <div className="bg-[#010E30] rounded-xl shadow-md hover:shadow-blue-400 transition p-5 space-y-3">
+    <div className="bg-[#212121] rounded-xl shadow-md hover:shadow-blue-400 transition p-5 space-y-3">
       {/* Category */}
-      <div className="flex justify-between items-center"> 
+      <div className="flex justify-between items-center">
         <span
           className={`px-3 py-1 text-md font-medium rounded-full text-white ${categoryColor}`}
         >
