@@ -66,13 +66,17 @@ function TrendingTopics() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#010E30]">
+    <div className="min-h-screen bg-[#212121]">
       {/* Header */}
-      <header className="flex justify-between items-center px-6 py-4 shadow bg-[#010E30]">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">DebateBot Arena</h1>
+      <header className="flex justify-between items-center px-6 py-4 shadow bg-[#212121]">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
+          DebateBot Arena
+        </h1>
         <nav className="flex gap-10">
-          <button className="text-white text-xl hover:text-black  hover:bg-gray-200 rounded-lg px-4 py-1"
-          onClick={() => (window.location.href = "/")}>
+          <button
+            className="text-white text-xl hover:text-black  hover:bg-gray-200 rounded-lg px-4 py-1"
+            onClick={() => (window.location.href = "/")}
+          >
             Home
           </button>
           <button
@@ -89,13 +93,13 @@ function TrendingTopics() {
           </button>
           <button
             onClick={() => (window.location.href = "/")}
-            className="bg-gray-200 text-black text-bold px-4 py-2 rounded-lg hover:bg-[#020817] hover:text-white"
+            className="bg-gray-200 text-black text-bold px-4 py-2 rounded-lg hover:bg-[#181818] hover:text-white"
           >
             New Debate
           </button>
         </nav>
       </header>
-      <div className="max-w-full bg-[#020817] max-h-full px-4 py-10">
+      <div className="max-w-full bg-[#181818] max-h-full px-4 py-10">
         <h2 className="text-5xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
           Trending Topics
         </h2>

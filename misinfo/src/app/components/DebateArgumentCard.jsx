@@ -14,7 +14,7 @@ export default function DebateArgumentCard({
       transition={{ delay: index * 0.2 }}
       className="mb-3"
     >
-      <div className="rounded-2xl border border-gray-200 bg-[#11246E] shadow-md p-4">
+      <div className="rounded-2xl border border-gray-200 bg-[#121212] shadow-md p-4">
         {/* Argument text */}
         <p className="text-gray-200 text-semibold mb-3 leading-relaxed">
           {argument}
