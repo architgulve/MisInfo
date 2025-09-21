@@ -379,9 +379,9 @@ export default function Home() {
             <div className="p-5 flex-1 overflow-y-auto">
               <AnimatePresence mode="wait">
                 {/* Waiting */}
-                {!submittedClaim && conStage === "waiting" && (
+                {!submittedClaim && proStage === "waiting" && (
                   <motion.p
-                    key="waiting-con"
+                    key="waiting-pro"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -392,7 +392,7 @@ export default function Home() {
                 )}
 
                 {/* Generating */}
-                {conStage === "generating" && (
+                {proStage === "generating" && (
                   <motion.div
                     key="generating-con"
                     initial={{ opacity: 0 }}
@@ -400,7 +400,7 @@ export default function Home() {
                     exit={{ opacity: 0 }}
                     className="text-center text-gray-200 bg-[#2a2a2a] p-4 rounded-md shadow-sm"
                   >
-                    <p>Generating opposing arguments for:</p>
+                    <p>Generating supporting arguments for:</p>
                     <p className="font-medium mt-1">"{submittedClaim}"</p>
 
                     {/* Loading dots animation */}
@@ -412,7 +412,7 @@ export default function Home() {
                       {[0, 1, 2].map((i) => (
                         <motion.span
                           key={i}
-                          className="w-3 h-3 bg-red-500 rounded-full"
+                          className="w-3 h-3 bg-green-500 rounded-full"
                           animate={{ y: [0, -6, 0] }}
                           transition={{
                             duration: 0.6,
@@ -426,16 +426,16 @@ export default function Home() {
                 )}
 
                 {/* Result */}
-                {conStage === "result" && (
+                {proStage === "result" && (
                   <motion.div
-                    key="result-con"
+                    key="result-pro"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.4 }}
                     className="space-y-3"
                   >
-                    {conArguments.map((arg, i) => (
+                    {proArguments.map((arg, i) => (
                       <DebateArgumentCard
                         key={i}
                         argument={arg.argument}

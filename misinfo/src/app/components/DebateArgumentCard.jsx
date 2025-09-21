@@ -16,26 +16,24 @@ export default function DebateArgumentCard({
     >
       <div className="rounded-2xl border border-gray-200 bg-[#121212] shadow-md p-4">
         {/* Argument text */}
-        <p className="text-gray-200 text-semibold mb-3 leading-relaxed">
+        <p className="text-gray-200 font-semibold mb-3 leading-relaxed">
           {argument}
         </p>
 
         {/* Source */}
-        <div className="flex items-center text-sm text-blue-200 hover:underline">
-          <ExternalLink className="w-4 h-4 mr-2" />
-          {source?.url ? (
-            <a href={source.url} target="_blank" rel="noopener noreferrer">
-              {source.name}
-            </a>
-          ) : (
-            <span>{source?.name}</span>
-          )}
-          {reliability && (
-            <span className="ml-2 text-gray-200">
-              (Reliability: {reliability}%)
-            </span>
-          )}
-        </div>
+        {source && (
+          <div className="flex items-center text-sm text-blue-200 hover:underline mb-1">
+            <ExternalLink className="w-4 h-4 mr-2" />
+            <span className="text-blue-200">Source: {source}</span>
+          </div>
+        )}
+
+        {/* Reliability */}
+        {reliability && (
+          <div className="text-sm text-[#ffffff79]">
+            Reliability: {reliability}%
+          </div>
+        )}
       </div>
     </motion.div>
   );
