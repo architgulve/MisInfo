@@ -68,13 +68,17 @@ export default function DebateHistory() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
-      <header className="flex justify-between items-center px-6 py-4 shadow bg-[#212121]">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
-          DebateBot Arena
-        </h1>
-        <nav className="flex gap-10">
-          <button className="text-white text-xl hover:text-black  hover:bg-gray-200 rounded-lg px-4 py-1"
-            onClick={() => (window.location.href = "/")}
+      <header className="flex justify-between items-center px-6 py-4 shadow bg-white">
+        <div className="flex items-center gap-2 text-black ">
+          <div className="w-6 h-6 bg-[#4285f4] rounded"></div>
+          <h1 className="font-bold text-2xl ">AI Debate Arena</h1>
+        </div>
+        <nav className="flex gap-6">
+          <button
+            className="text-gray-600 hover:text-black text-xl"
+            onClick={() => {
+              window.location.href = "/";
+            }}
           >
             Home
           </button>
@@ -92,7 +96,7 @@ export default function DebateHistory() {
           </button>
           <button
             onClick={() => (window.location.href = "/")}
-            className="bg-gray-200 text-black text-bold px-4 py-2 rounded-lg hover:bg-[#181818] hover:text-white"
+            className="bg-gray-200 text-black text-bold px-4 py-2 rounded-lg hover:bg-[#020817] hover:text-white"
           >
             New Debate
           </button>
@@ -100,10 +104,8 @@ export default function DebateHistory() {
       </header>
 
       {/* Debate History Section */}
-      <main className="max-w-full bg-[#181818] mx-auto px-6 py-8 space-x-3">
-        <h2 className="text-5xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent ">
-          Debate History
-        </h2>
+      <main className="max-w-full bg-[#020817] mx-auto px-6 py-8 space-x-3">
+        <h2 className="text-5xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent ">Debate History</h2>
         <p className="text-gray-400 text-xl mb-6">
           Explore past debates and their outcomes
         </p>
@@ -112,7 +114,7 @@ export default function DebateHistory() {
           {debates.map((debate) => (
             <div
               key={debate.id}
-              className="bg-[#212121] p-4 rounded-lg shadow-smshadow-blue-400 hover:bg-[#0F1D50] transition duration-200 ease-in-out space-y-6"
+              className="bg-[#010E30] p-4 rounded-lg shadow-smshadow-blue-400 hover:bg-[#0F1D50] transition duration-200 ease-in-out space-y-6"
             >
               {/* Title + Result */}
               <div className="flex justify-between items-start">
@@ -120,7 +122,7 @@ export default function DebateHistory() {
                   {debate.title}
                 </h3>
                 <span
-                  className={`px-2 py-0.5 text-212121 rounded-md text-md ${debate.resultColor}`}
+                  className={px-2 py-0.5 text-010E30 rounded-md text-md ${debate.resultColor}}
                 >
                   {debate.result}
                 </span>

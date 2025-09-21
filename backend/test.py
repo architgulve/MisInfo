@@ -4,13 +4,20 @@ from pydantic import BaseModel
 from groq import Groq
 import os
 
-# Initialize Groq support
-support = Groq(api_key="key")
-against = Groq(api_key="key")
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # loads .env file into environment variables
+
+support_api_key = os.getenv("GROQ_SUPPORT_API_KEY")
+against_api_key = os.getenv("GROQ_AGAINST_API_KEY")
+
+support = Groq(api_key=support_api_key)
+against = Groq(api_key=against_api_key)
 
 app = FastAPI()
 
-# ✅ Add CORS middleware
+# Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # or ["http://localhost:3000"] for stricter

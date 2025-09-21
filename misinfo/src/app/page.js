@@ -18,55 +18,89 @@ export default function Home() {
   const [conStage, setConStage] = useState("waiting"); // waiting | generating | result
   const [conArguments, setConArguments] = useState([]);
 
-  const handleSubmit = () => {
+  const [juryData, setJuryData] = useState(null);
+  
+  
+  const handleSubmit = async () => {
     if (!claim) return;
     setSubmittedClaim(claim);
     setClaim("");
 
-    // Step 1: Move both bots to "generating"
     setProStage("generating");
     setConStage("generating");
-
-    // Step 2: Fake async call (replace with real API call)
-    setTimeout(() => {
-      setProArguments([
-        {
-          argument:
-            "The advent of AI will create more jobs than it displaces, similar to how the industrial revolution led to new types of employment.",
-          source: "MIT Technology Review",
-          reliability: "94%",
-        },
-        {
-          argument:
-            "Historical data shows that technological revolutions have always led to net job growth, with AI already creating new roles in data science and machine learning.",
-          source: "World Economic Forum",
-          reliability: "91%",
-        },
-      ]);
-      setProStage("result");
-    }, 2000);
-
     setJuryStage("generating");
 
-    setTimeout(() => {
-      setConArguments([
-        {
-          argument:
-            "AI automation is already displacing workers in manufacturing and customer service, with predictions of millions of jobs lost.",
-          source: "Oxford Economics",
-          reliability: "89%",
-        },
-        {
-          argument:
-            "The rate of job destruction is outpacing AI job creation, and many displaced workers lack access to retraining.",
-          source: "Bureau of Labor Statistics",
-          reliability: "86%",
-        },
-      ]);
+    try {
+      const response = await fetch("http://localhost:8000/debate/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ claim, rounds: 3 }), // rounds can be adjusted
+      });
+
+      const data = await response.json();
+      if (data.jury) {
+        setJuryData(data.jury);
+      } else {
+        setJuryData(null);
+      }
+      
+      if (data.error) {
+        // Handle error like no evidence found
+        setProArguments([]);
+        setConArguments([]);
+        setProStage("waiting");
+        setConStage("waiting");
+        setJuryStage("waiting");
+        // Optionally show error message
+        return;
+      }
+
+      // Extract last 3 pro and con messages
+      const proArgs = [];
+      const conArgs = [];
+      for (let i = data.transcript.length - 1; i >= 0; i--) {
+        if (proArgs.length >= 3 && conArgs.length >= 3) break;
+        const msg = data.transcript[i];
+        if (msg.role === "pro" && proArgs.length < 3) {
+          proArgs.unshift({
+            argument: msg.content,
+            source: "",
+            reliability: "",
+          });
+        } else if (msg.role === "con" && conArgs.length < 3) {
+          conArgs.unshift({
+            argument: msg.content,
+            source: "",
+            reliability: "",
+          });
+        }
+      }
+
+      setProArguments(proArgs);
+      setConArguments(conArgs);
+
+      // Update jury metrics based on data.jury if available
+      if (data.jury) {
+        const proScore = data.jury.pro_score || 78;
+        const conScore = data.jury.con_score || 78;
+        // Map these scores or set reliability, accuracy, verdict accordingly
+        setReliability(proScore * 1); // example mapping
+        setAccuracy(84); 
+        setVerdict(proScore * 100 / (proScore + conScore));
+        setSslValid(true); // or based on analysis
+      }
+
+      setProStage("result");
       setConStage("result");
       setJuryStage("result");
-    }, 2500);
+    } catch (error) {
+      // Handle fetch error
+      setProStage("waiting");
+      setConStage("waiting");
+      setJuryStage("waiting");
+    }
   };
+
   useEffect(() => {
     if (submittedClaim) {
       // reset first
@@ -95,7 +129,7 @@ export default function Home() {
     setSslValid(true);
     setReliability(78);
     setAccuracy(84);
-    setVerdict(65);
+    setVerdict(0);
   };
   const startDebate = async () => {
     setLoading(true);
@@ -235,6 +269,7 @@ export default function Home() {
         </AnimatePresence>
 
         {/* Jury Analysis */}
+
         <AnimatePresence mode="wait">
           {/* Waiting */}
           {juryStage === "waiting" && (
@@ -276,90 +311,55 @@ export default function Home() {
           )}
 
           {/* Result */}
-          {juryStage === "result" && (
-            <motion.div
-              key="jury-result"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.6 }}
-              className="bg-[#212121] rounded-lg shadow-md p-6 w-full max-w-6xl mt-8"
-            >
-              <h2 className="text-2xl font-bold mb-4 text-blue-200">
-                Jury Analysis
-              </h2>
+          {juryStage === "result" && juryData && (
+  <motion.div className="bg-[#212121] rounded-lg shadow-md p-6 w-full max-w-6xl mt-8">
+    <h2 className="text-2xl font-bold mb-4 text-blue-200">Jury Analysis</h2>
 
-              {/* SSL */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-                <div className="border-2 border-blue-600 rounded-lg p-4 text-center">
-                  <p className="text-gray-200 mb-2">SSL Certificate</p>
-                  <motion.p
-                    className={` text-lg ${
-                      sslValid ? "text-green-600" : "text-red-600"
-                    }`}
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ delay: 0.3 }}
-                  >
-                    {sslValid ? "Valid" : "Invalid"}
-                  </motion.p>
-                </div>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+      {/* SSL */}
+      <div className="border-2 border-blue-600 rounded-lg p-4 text-center">
+        <p className="text-gray-200 mb-2">SSL Score</p>
+        <p className="text-lg text-blue-400">5 (Pro) / 3 (Con)</p>
+      </div>
+      
+      {/* Sentiment */}
+      <div className="border-2 border-blue-600 rounded-lg p-4 text-center">
+        <p className="text-gray-200 mb-2">Sentiment</p>
+        <p className="text-lg text-blue-400">{juryData.pro_eval.sentiment.toFixed(2)} / {juryData.con_eval.sentiment.toFixed(2)}</p>
+      </div>
+      {/* Bias */}
+      <div className="border-2 border-blue-600 rounded-lg p-4 text-center">
+        <p className="text-gray-200 mb-2">Bias</p>
+        <p className="text-lg text-blue-400">{juryData.pro_eval.bias} / {juryData.con_eval.bias}</p>
+      </div>
+      
+    </div>
 
-                {/* Reliability */}
-                <div className="border-2 border-blue-600 rounded-lg p-4">
-                  <p className="text-gray-200 mb-2 text-center">
-                    Source Reliability
-                  </p>
-                  <div className="w-full bg-[#212121] border-1 border-gray-200 rounded-full h-3">
-                    <motion.div
-                      className="bg-blue-600 h-3 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${reliability}%` }}
-                      transition={{ delay: 0.6, duration: 1 }}
-                    />
-                  </div>
-                  <p className="text-blue-600 font-semibold text-sm mt-2 text-center">
-                    {reliability}% Avg
-                  </p>
-                </div>
+    <div className="text-center mt-6">
+  <h2 className="text-4xl md:text-2xl font-extrabold text-blue-400">
+    {juryData.final_verdict}
+  </h2>
+</div>
+  </motion.div>
+)}
 
-                {/* Accuracy */}
-                <div className="border-2 border-purple-600 rounded-lg p-4">
-                  <p className="text-gray-200 mb-2 text-center">
-                    Fact Accuracy
-                  </p>
-                  <div className="w-full bg-[#212121] border-1 border-gray-200 rounded-full h-3">
-                    <motion.div
-                      className="bg-purple-600 h-3 rounded-full"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${accuracy}%` }}
-                      transition={{ delay: 0.9, duration: 1 }}
-                    />
-                  </div>
-                  <p className="text-purple-600 font-semibold text-sm mt-2 text-center">
-                    {accuracy}% Verified
-                  </p>
-                </div>
-              </div>
-
-              {/* Verdict */}
-              <div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-200">
-                  Audience Verdict
-                </h3>
-                <div className="w-full bg-[#212121] border-1 border-gray-200 rounded-full h-3 overflow-hidden">
-                  <motion.div
-                    className="bg-yellow-400 h-3 rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${verdict}%` }} // Corrected usage of the spread operator
-                    transition={{ delay: 1.2, duration: 1.2 }}
-                  />
-                </div>
-                <p className="text-sm text-gray-600 mt-1">{verdict}% ProBot</p>
-              </div>
-            </motion.div>
-          )}
         </AnimatePresence>
+        {/* {verdict>0 && (
+          <motion.div
+            key="jury"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="space-y-4">
+
+              <div className="p-3 rounded-xl bg-purple-100 text-purple-800 font-bold text-center">
+                {verdict >= 50 ? "✅ Likely True" : "❌ Likely False"}
+              </div>
+            </div>
+          </motion.div>
+        )} */}
 
         {/* Debate Agents */}
         <div className="flex gap-6 mt-6 w-full max-w-7xl">
@@ -381,7 +381,7 @@ export default function Home() {
                 {/* Waiting */}
                 {!submittedClaim && proStage === "waiting" && (
                   <motion.p
-                    key="waiting-pro"
+                    key="waiting-con"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
@@ -400,7 +400,7 @@ export default function Home() {
                     exit={{ opacity: 0 }}
                     className="text-center text-gray-200 bg-[#2a2a2a] p-4 rounded-md shadow-sm"
                   >
-                    <p>Generating supporting arguments for:</p>
+                    <p>Generating opposing arguments for:</p>
                     <p className="font-medium mt-1">"{submittedClaim}"</p>
 
                     {/* Loading dots animation */}
@@ -412,7 +412,7 @@ export default function Home() {
                       {[0, 1, 2].map((i) => (
                         <motion.span
                           key={i}
-                          className="w-3 h-3 bg-green-500 rounded-full"
+                          className="w-3 h-3 bg-red-500 rounded-full"
                           animate={{ y: [0, -6, 0] }}
                           transition={{
                             duration: 0.6,
@@ -428,7 +428,7 @@ export default function Home() {
                 {/* Result */}
                 {proStage === "result" && (
                   <motion.div
-                    key="result-pro"
+                    key="result-con"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}

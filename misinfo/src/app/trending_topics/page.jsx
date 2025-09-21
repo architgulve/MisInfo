@@ -66,15 +66,15 @@ function TrendingTopics() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#212121]">
+    <div className="min-h-screen bg-[#010E30]">
       {/* Header */}
-      <header className="flex justify-between items-center px-6 py-4 shadow bg-[#212121]">
+      <header className="flex justify-between items-center px-6 py-4 shadow bg-[#010E30]">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
           DebateBot Arena
         </h1>
         <nav className="flex gap-10">
           <button
-            className="text-white text-xl hover:text-black  hover:bg-gray-200 rounded-lg px-4 py-1"
+            className="text-white text-xl hover:text-black hover:bg-gray-200 rounded-lg px-4 py-1"
             onClick={() => (window.location.href = "/")}
           >
             Home
@@ -87,18 +87,20 @@ function TrendingTopics() {
           </button>
           <button
             onClick={() => (window.location.href = "/history")}
-            className="text-white text-xl hover:text-black  hover:bg-gray-200 rounded-lg px-4 py-1"
+            className="text-white text-xl hover:text-black hover:bg-gray-200 rounded-lg px-4 py-1"
           >
             History
           </button>
           <button
             onClick={() => (window.location.href = "/")}
-            className="bg-gray-200 text-black text-bold px-4 py-2 rounded-lg hover:bg-[#181818] hover:text-white"
+            className="bg-gray-200 text-black font-bold px-4 py-2 rounded-lg hover:bg-[#181818] hover:text-white"
           >
             New Debate
           </button>
         </nav>
       </header>
+
+      {/* Main Content */}
       <div className="max-w-full bg-[#181818] max-h-full px-4 py-10">
         <h2 className="text-5xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
           Trending Topics
@@ -108,7 +110,7 @@ function TrendingTopics() {
         </p>
 
         {/* Cards Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 ">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           {topics.map((topic, index) => (
             <TopicCard key={index} {...topic} />
           ))}

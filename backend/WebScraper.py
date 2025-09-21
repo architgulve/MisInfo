@@ -7,8 +7,7 @@ from PIL import Image
 from io import BytesIO
 import time
 import openai
-from duckduckgo_search import DDGS
-
+from ddgs import DDGS
 
 # ------------------- Tokenizer -------------------
 encoding = tiktoken.encoding_for_model("gpt-4")
@@ -151,7 +150,7 @@ def ask_llm_if_enough(query, chunks, llm_client):
     Reply with only one word: "enough" or "more".
     """
     resp = llm_client.chat.completions.create(
-        model="gpt-4o-mini",
+        model="llama-3.1-8b-instant",
         messages=[{"role": "user", "content": prompt}]
     )
     return resp.choices[0].message.content.strip().lower()
